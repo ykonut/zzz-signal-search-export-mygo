@@ -1,0 +1,57 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            name: macos-arm64
+            output: zzz-signal-search-export-mygo
+          - os: windows-latest
+            name: windows-amd64
+            output: zzz-signal-search-export-mygo.exe
+          - os: ubuntu-latest
+            name: linux-amd64
+            output: zzz-signal-search-export-mygo
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.x'
+          cache: true
+      - name: Build
+        run: go build -trimpath -ldflags="-s -w" -o dist/${{ matrix.output }} .
+      - name: Package macOS app
+        if: runner.os == 'macOS'
+        run: |
+          chmod +x build.sh
+          GO_BIN="$(go env GOROOT)/bin/go" ./build.sh
+          cd dist
+          ditto -c -k --sequesterRsrc --keepParent "zzz-signal-search-export-mygo.app" "zzz-signal-search-export-mygo-${{ matrix.name }}.zip"
+      - name: Package Windows/Linux
+        if: runner.os != 'macOS'
+        shell: bash
+        run: |
+          cd dist
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            7z a "zzz-signal-search-export-mygo-${{ matrix.name }}.zip" zzz-signal-search-export-mygo.exe
+          else
+            tar -czf "zzz-signal-search-export-mygo-${{ matrix.name }}.tar.gz" zzz-signal-search-export-mygo
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zzz-signal-search-export-mygo-${{ matrix.name }}
+          path: |
+            dist/*.zip
+            dist/*.tar.gz
+            dist/*.exe
+            dist/*/Contents
