@@ -24,8 +24,8 @@ cat > "$OUT/Contents/Info.plist" <<'PLIST'
   <key>CFBundleName</key><string>zzz-signal-search-export-mygo</string>
   <key>CFBundleDisplayName</key><string>绝区零调频记录导出</string>
   <key>CFBundleIdentifier</key><string>local.ykonut.zzz-signal-search-export-mygo</string>
-  <key>CFBundleVersion</key><string>1.0.0</string>
-  <key>CFBundleShortVersionString</key><string>1.0.0</string>
+  <key>CFBundleVersion</key><string>1.0.1</string>
+  <key>CFBundleShortVersionString</key><string>1.0.1</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleExecutable</key><string>zzz-signal-search-export-mygo</string>
   <key>CFBundleIconFile</key><string>icon.icns</string>

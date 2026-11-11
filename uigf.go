@@ -9,7 +9,7 @@ import (
 )
 
 const appName = "zzz-signal-search-export-mygo"
-const appVersion = "1.0.0"
+const appVersion = "1.0.1"
 
 func uigfTimeString() string {
 	return time.Now().Format("20060102_1504")
