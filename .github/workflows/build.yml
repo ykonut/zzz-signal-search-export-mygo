@@ -1,5 +1,8 @@
 name: Build
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
   push:
@@ -43,7 +46,7 @@ jobs:
         run: |
           cd dist
           if [ "${{ runner.os }}" = "Windows" ]; then
-            7z a "zzz-signal-search-export-mygo-${{ matrix.name }}.zip" zzz-signal-search-export-mygo.exe
+            powershell -NoProfile -Command "Compress-Archive -Path 'zzz-signal-search-export-mygo.exe' -DestinationPath 'zzz-signal-search-export-mygo-${{ matrix.name }}.zip'"
           else
             tar -czf "zzz-signal-search-export-mygo-${{ matrix.name }}.tar.gz" zzz-signal-search-export-mygo
           fi
@@ -55,3 +58,19 @@ jobs:
             dist/*.tar.gz
             dist/*.exe
             dist/*/Contents
+
+  publish:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/**/*.zip
+            dist/**/*.tar.gz
